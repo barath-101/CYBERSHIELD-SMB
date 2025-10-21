@@ -1,0 +1,96 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: cybershield-postgres
+    environment:
+      POSTGRES_USER: cybershield
+      POSTGRES_PASSWORD: cybershield123
+      POSTGRES_DB: cybershield_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cybershield"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: cybershield-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: cybershield-backend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://cybershield:cybershield123@postgres:5432/cybershield_db
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: dev-jwt-secret-change-in-production
+      JWT_EXPIRES_IN: 1h
+      REFRESH_TOKEN_SECRET: dev-refresh-secret-change-in-production
+      REFRESH_TOKEN_EXPIRES_IN: 7d
+      AI_SERVICE_URL: http://ai-service:5000
+      ETH_RPC_URL: https://rpc-mumbai.maticvigil.com
+      ETH_PRIVATE_KEY: ${ETH_PRIVATE_KEY:-}
+      CONTRACT_ADDRESS: ${CONTRACT_ADDRESS:-}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run dev
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: cybershield-ai
+    environment:
+      FLASK_ENV: development
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./ai-service:/app
+      - /app/.venv
+    command: python app.py
+
+  dashboard:
+    build:
+      context: ./admin-dashboard
+      dockerfile: Dockerfile
+    container_name: cybershield-dashboard
+    environment:
+      REACT_APP_API_URL: http://localhost:3000
+      REACT_APP_WS_URL: ws://localhost:3000
+    ports:
+      - "3001:3000"
+    volumes:
+      - ./admin-dashboard:/app
+      - /app/node_modules
+    command: npm start
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
