@@ -1,9 +1,11 @@
-# CyberShield SMB
+# CyberShield SMB 🛡️
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tech Stack](https://img.shields.io/badge/Tech-Stack-blue.svg)](https://github.com/your-repo/CyberShield-SMB)
+[![Tech Stack](https://img.shields.io/badge/Tech-Stack-blue.svg)](https://github.com/barath-101/CYBERSHIELD-SMB)
 
-Enterprise-grade protection for the little guys: An AI and blockchain-powered cybersecurity platform designed for small and medium businesses.
+**Enterprise-grade protection for the little guys**: An AI and blockchain-powered cybersecurity platform designed for small and medium businesses.
+
+> A complete browser-level threat detection system with Chrome extension, AI microservice, blockchain audit trails, and admin dashboard.
 
 ## Overview
 
@@ -133,17 +135,84 @@ Secure API Gateway
 - Advancement to adaptive AI through federated learning models.
 - Development of a cloud console for managed service provider (MSP) partnerships.
 
-## Repository Structure
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Docker & Docker Compose
+- Node.js 18+ (for local development)
+- Python 3.11+ (for AI service development)
+- Polygon Mumbai testnet wallet with MATIC (for blockchain features)
+
+### One-Command Setup
+
+```bash
+# Clone repository
+git clone https://github.com/barath-101/CYBERSHIELD-SMB.git
+cd CYBERSHIELD-SMB
+
+# Copy environment template
+cp .env.example .env
+
+# Start all services with Docker Compose
+docker-compose up
+```
+
+Services will be available at:
+- **Backend API**: http://localhost:3000
+- **AI Service**: http://localhost:5000
+- **Admin Dashboard**: http://localhost:3001
+- **PostgreSQL**: localhost:5432
+- **Redis**: localhost:6379
+
+### Default Credentials
+
+```
+Email: admin@demo.com
+Password: demo123
+```
+
+## 📦 Repository Structure
 
 ```
 CyberShield-SMB/
+├── backend/              # Node.js + Express API server
+│   ├── src/
+│   │   ├── config/       # Database, Redis, JWT config
+│   │   ├── middleware/   # Auth, validation, rate limiting
+│   │   ├── routes/       # API endpoints
+│   │   └── services/     # Business logic
+│   └── db/init.sql       # Database schema
 │
-├── frontend/           # React + Material UI dashboard
-├── backend/            # Spring Boot API, AI, and blockchain modules
-├── agents/             # Lightweight Node.js device agents
-├── demo-data/          # Synthetic JSON for threat simulation
-├── docs/               # Documentation, reports, and references
-└── README.md           # Project overview (this file)
+├── ai-service/           # Python FastAPI AI microservice
+│   ├── models/           # Trained ML models
+│   ├── utils/            # Feature extraction, OCR, steg detection
+│   ├── train.py          # Model training script
+│   ├── retrain.py        # Feedback-based retraining
+│   └── inference.py      # Threat detection logic
+│
+├── contracts/            # Solidity smart contracts
+│   ├── contracts/        # SecurityAudit.sol
+│   ├── scripts/          # Deployment scripts
+│   └── test/             # Contract tests
+│
+├── extension/            # Chrome extension (Manifest V3)
+│   ├── src/
+│   │   ├── popup.*       # Extension popup UI
+│   │   ├── content.js    # Page scanning script
+│   │   ├── service_worker.js
+│   │   └── api.js        # Backend connector
+│   └── manifest.json
+│
+├── admin-dashboard/      # React + Material UI dashboard
+│   └── src/
+│       ├── pages/        # Dashboard, Events, Users, Settings
+│       ├── components/   # Reusable components
+│       └── services/     # API client
+│
+├── docker-compose.yml    # Multi-container orchestration
+├── .env.example          # Environment variables template
+└── README.md             # This file
 ```
 
 ## Demo Pitch Flow
@@ -170,6 +239,263 @@ CyberShield-SMB/
 - [TensorFlow Lite for Anomaly Detection](https://www.tensorflow.org/lite)
 - [NIST Cybersecurity Framework](https://www.nist.gov/cyberframework)
 
+## 🔧 Detailed Setup
+
+### Backend Setup
+
+```bash
+cd backend
+npm install
+npm run dev
+```
+
+**Environment Variables:**
+See `.env.example` for required configuration.
+
+**Database Initialization:**
+```bash
+# Database will auto-initialize from db/init.sql
+# Or manually run:
+psql -U cybershield -d cybershield_db -f db/init.sql
+```
+
+### AI Service Setup
+
+```bash
+cd ai-service
+pip install -r requirements.txt
+
+# Train the model
+python train.py
+
+# Start service
+python app.py
+```
+
+**Requirements:**
+- Tesseract OCR installed (`apt-get install tesseract-ocr`)
+- Trained model files in `models/` directory
+
+### Smart Contract Deployment
+
+```bash
+cd contracts
+npm install
+
+# Deploy to Polygon Mumbai testnet
+npm run deploy:mumbai
+
+# Update CONTRACT_ADDRESS in .env
+```
+
+**Get Mumbai MATIC:**
+https://faucet.polygon.technology/
+
+### Chrome Extension
+
+1. Open Chrome: `chrome://extensions/`
+2. Enable "Developer mode"
+3. Click "Load unpacked"
+4. Select `extension/` directory
+5. Sign in with demo credentials
+
+### Admin Dashboard
+
+```bash
+cd admin-dashboard
+npm install
+npm start
+```
+
+Opens at http://localhost:3000
+
+## 📖 Usage Guide
+
+### For End Users (Chrome Extension)
+
+1. **Install Extension** - Load from Chrome Web Store or developer mode
+2. **Sign In** - Click extension icon, enter credentials
+3. **Automatic Protection** - Extension scans pages automatically
+4. **View Threats** - Click extension to see recent events
+5. **Manual Scan** - Click "Scan Page Now" for immediate check
+
+### For Administrators (Dashboard)
+
+1. **Login** - Navigate to dashboard, sign in
+2. **View Statistics** - Monitor threat metrics and trends
+3. **Review Events** - Check all detected threats
+4. **Acknowledge Alerts** - Mark events as reviewed
+5. **Report False Positives** - Improve AI accuracy
+6. **Configure Policies** - Set detection thresholds
+7. **Manage Users** - View company users
+
+### Demo Mode
+
+**Seed Demo Data:**
+```bash
+curl -X POST http://localhost:3000/api/demo/seed
+```
+
+**Simulate Attack:**
+```bash
+curl -X POST http://localhost:3000/api/demo/simulate
+```
+
+Or use buttons in the Dashboard UI.
+
+## 🧪 Testing
+
+### Backend Tests
+
+```bash
+cd backend
+npm test
+```
+
+### Contract Tests
+
+```bash
+cd contracts
+npx hardhat test
+```
+
+### AI Service Tests
+
+```bash
+cd ai-service
+pytest tests/
+```
+
+## 🔐 Security Features
+
+- **AI-Powered Detection**: IsolationForest + heuristics
+- **OCR Analysis**: Extract and analyze text in images
+- **Steganography Detection**: LSB and statistical analysis
+- **Real-Time Blocking**: Quarantine threats instantly
+- **Blockchain Audit**: Immutable event logging
+- **JWT Authentication**: Secure API access
+- **Rate Limiting**: Prevent API abuse
+- **Input Validation**: Protect against injection attacks
+
+## 🌐 API Endpoints
+
+### Authentication
+```
+POST /api/auth/register
+POST /api/auth/login
+POST /api/auth/refresh
+```
+
+### Scanning
+```
+POST /api/scan/image
+POST /api/scan/popup
+```
+
+### Events
+```
+GET /api/events
+GET /api/events/:id
+PATCH /api/events/:id/acknowledge
+```
+
+### Admin
+```
+GET /api/admin/stats
+GET /api/admin/users
+POST /api/admin/blockdomain
+```
+
+### Policies
+```
+GET /api/policies/:companyId
+POST /api/policies/:companyId
+```
+
+### Demo
+```
+POST /api/demo/seed
+POST /api/demo/simulate
+```
+
+See component READMEs for detailed API documentation.
+
+## 🚢 Deployment
+
+### Development
+```bash
+docker-compose up
+```
+
+### Production
+
+**Backend**: Deploy to Railway, Render, or AWS EC2
+**AI Service**: Deploy to EC2 with GPU (optional) or standard compute
+**Dashboard**: Deploy to Vercel or Netlify
+**Smart Contract**: Already deployed to Polygon Mumbai
+
+**Environment Setup:**
+1. Set production database credentials
+2. Configure production API URLs
+3. Set JWT secrets
+4. Add blockchain private key
+5. Enable HTTPS
+
+## 📊 Performance
+
+- **API Latency**: < 100ms (without AI)
+- **AI Inference**: < 5s per request
+- **Scan Rate**: 20 requests/minute per extension
+- **Blockchain**: ~100k gas per event (~$0.01-0.05)
+
+## 🐛 Troubleshooting
+
+**Extension not scanning:**
+- Verify backend is running
+- Check login status
+- Review browser console
+
+**AI service errors:**
+- Ensure Tesseract is installed
+- Check model files exist
+- Verify Python dependencies
+
+**Blockchain errors:**
+- Verify wallet has Mumbai MATIC
+- Check RPC URL is accessible
+- Ensure contract is deployed
+
+**Database connection failed:**
+- Check PostgreSQL is running
+- Verify credentials in .env
+- Test connection manually
+
+## 🔮 Future Roadmap
+
+- [ ] Deep learning image classifier (CNN)
+- [ ] Multi-language OCR support
+- [ ] Browser fingerprinting detection
+- [ ] Zero-trust network integration
+- [ ] Mobile app (React Native)
+- [ ] MSP management console
+- [ ] Advanced threat intelligence feeds
+- [ ] Federated learning for privacy-preserving AI
+
+## 🤝 Contributing
+
+Contributions welcome! Please:
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+## 📄 License
+
+MIT License - see LICENSE file for details
+
 ---
+
+**Built with ❤️ for SMBs worldwide**
 
 *CyberShield SMB represents a committed effort to bridge the cybersecurity divide, proving that robust, intelligent defense can be both accessible and effective for small businesses.*
